@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Crónicas de Estefany</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Creepster&family=Dancing+Script:wght@700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --neon-red: #ff003c;
+            --neon-blue: #00f3ff;
+            --deep-dark: #050505;
+            --text-glow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+        * { box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            margin: 0;
+            background-color: var(--deep-dark);
+            color: #ddd;
+            font-family: 'Lato', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+            padding-bottom: 80px;
+            transition: background 2s ease, color 1s ease;
+            background-image: url('https://www.transparenttextures.com/patterns/stardust.png');
+        }
+
+        /* ESTILO FINAL ROMÁNTICO */
+        body.love-mode {
+            background-color: #fff0f5;
+            background-image: radial-gradient(#ffb6c1 1px, transparent 1px);
+            background-size: 20px 20px;
+            color: #4a4a4a;
+        }
+        body.love-mode h1 { color: #e91e63; text-shadow: none; font-family: 'Dancing Script'; }
+        body.love-mode .story-text { border-left-color: #e91e63; color: #333; }
+        body.love-mode .btn { background: #e91e63; border: none; color: white; }
+
+        /* EFECTO CRT / VHS */
+        .scanlines {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 3px, 3px 100%; pointer-events: none; z-index: 999; opacity: 0.1;
+        }
+
+        .container { width: 90%; max-width: 500px; text-align: center; margin-top: 30px; position: relative; z-index: 10; }
+
+        /* TÍTULOS */
+        h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.8rem;
+            color: var(--neon-red);
+            text-shadow: 0 0 10px var(--neon-red);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* TEXTO DE HISTORIA */
+        .story-text {
+            text-align: justify;
+            font-size: 1rem;
+            line-height: 1.6;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(0,0,0,0.3);
+            border-left: 3px solid var(--neon-blue);
+            border-radius: 0 10px 10px 0;
+            box-shadow: 0 0 15px rgba(0,0,0,0.5);
+        }
+
+        /* VISUALES */
+        .visual-box {
+            width: 100%; height: 200px; overflow: hidden; border-radius: 8px;
+            border: 1px solid #333; margin-bottom: 20px; position: relative;
+        }
+        .visual-box img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* BOTONES */
+        .btn {
+            background: #111; border: 2px solid var(--neon-red); color: var(--neon-red);
+            padding: 15px; font-family: 'Cinzel', serif; font-weight: bold; font-size: 1rem;
+            width: 100%; cursor: pointer; margin-top: 10px; transition: 0.3s;
+            text-transform: uppercase; letter-spacing: 1px;
+        }
+        .btn:active { background: var(--neon-red); color: black; }
+
+        .skip-btn {
+            background: transparent; border: 1px dashed #555; color: #888;
+            padding: 10px; width: 100%; cursor: pointer; margin-top: 15px; font-size: 0.8rem;
+        }
+
+        .chapter { display: none; animation: fadeIn 1.5s ease; padding-bottom: 50px;}
+        .chapter.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* --- ESTILOS DE PUZZLES ESPECÍFICOS --- */
+        
+        /* C4 Luces */
+        .lights-grid { display: flex; justify-content: center; gap: 15px; margin: 20px 0; }
+        .bulb { width: 50px; height: 50px; border-radius: 50%; background: #222; border: 3px solid #444; transition: 0.2s; }
+        .bulb.active { box-shadow: 0 0 30px currentColor; background: currentColor; border-color: white; transform: scale(1.1); }
+
+        /* C15 Carta */
+        .paper { background: #fdfbf7; color: #111; padding: 20px; font-family: 'Dancing Script'; font-size: 1.3rem; transform: rotate(-1deg); box-shadow: 0 0 20px rgba(0,0,0,0.5); text-align: left;}
+
+        /* Final */
+        #btnNo { position: relative; transition: all 0.8s ease; }
+
+    </style>
+</head>
+<body>
+
+    <div class="scanlines"></div>
+
+    <audio id="bgMusicEpic" loop>
+        <source src="https://files.freemusicarchive.org/storage-freemusicarchive-org/music/no_curator/Tours/Enthusiast/Tours_-_01_-_Enthusiast.mp3" type="audio/mpeg">
+    </audio>
+
+    <audio id="bgMusicLove" loop>
+        <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="container">
+
+        <div id="ch0" class="chapter active">
+            <h1 style="font-size: 2.5rem; color: red; font-family: 'Creepster';">STRANGER<br>LOVE</h1>
+            <div class="visual-box">
+                <img src="https://cdn.dribbble.com/userupload/42462408/file/original-0d4a17a226e6da2c913866900a8bd39e.gif" alt="Upside Down">
+            </div>
+            <p>Una grieta se ha abierto en el tiempo.</p>
+            <p>Estefany, estás atrapada en una dimensión paralela. Esta es mi misión para rescatarte.</p>
+            <button class="btn" onclick="startGame()">INICIAR MISIÓN ▶️</button>
+        </div>
+
+        <div id="ch1" class="chapter">
+            <h1>CAPÍTULO 1: LA ESTÁTICA</h1>
+            <div class="story-text">
+                Todo comenzó el 14 de febrero. El cielo de Hawkins se tornó púrpura. Intenté llamarte, pero solo escuchaba ruido blanco. Sé que estás ahí fuera, en algún lugar entre la Vía Láctea y el mundo del revés. Necesito sintonizar nuestra frecuencia.
+            </div>
+            <div class="visual-box"><img src="https://res.cloudinary.com/dkjdf4hsq/image/upload/v1771104542/vnf8dxdivkmhaxwbotmp.png"></div>
+            <p>Mueve el dial hasta encontrar mi voz.</p>
+            <input type="range" min="0" max="100" value="0" style="width:100%; accent-color:red;" oninput="checkRadio(this.value)">
+            <p id="radioStat" style="color:#555">Buscando...</p>
+            <button class="skip-btn" onclick="next(2)">⚡ USAR PODERES (SALTAR)</button>
+        </div>
+
+        <div id="ch2" class="chapter">
+            <h1>CAPÍTULO 2: EL CERROJO</h1>
+            <div class="story-text">
+                Encontré una puerta en el laboratorio. Está sellada con un código numérico. Recuerdo que me dijiste que el número '011' tenía un significado especial, algo sobre una chica con poderes que salvó a sus amigos. Quizás esa sea la clave.
+            </div>
+            <h1 id="codeDisplay" style="letter-spacing:10px;">_ _ _</h1>
+            <div style="display:flex; justify-content:center; gap:10px;">
+                <button class="btn" style="width:auto" onclick="enterCode('0')">0</button>
+                <button class="btn" style="width:auto" onclick="enterCode('1')">1</button>
+                <button class="btn" style="width:auto" onclick="enterCode('2')">2</button>
+            </div>
+            <button class="skip-btn" onclick="next(3)">⚡ USAR PODERES (SALTAR)</button>
+        </div>
+
+        <div id="ch3" class="chapter">
+            <h1>CAPÍTULO 3: EL RECUERDO</h1>
+            <div class="story-text">
+                Logré entrar. Sobre un escritorio viejo, cubierto de polvo y telarañas del Upside Down, encontré una fotografía. Está borrosa por la radiación dimensional, pero reconocería esa sonrisa en cualquier universo. Eres tú.
+            </div>
+            <div class="visual-box" style="border: 4px solid white;">
+                <img src="https://wdteacgqjbtonaktzxny.supabase.co/storage/v1/object/public/propio/Captura%20de%20pantalla%202026-02-14%20171720.png" id="secretPhoto" style="filter: blur(20px); transition: 2s;">
+            </div>
+            <p>Mantén presionado para limpiar la imagen.</p>
+            <button class="btn" onmousedown="reveal(true)" onmouseup="reveal(false)" ontouchstart="reveal(true)" ontouchend="reveal(false)">LIMPIAR FOTO</button>
+            <button class="skip-btn" onclick="next(4)">⚡ USAR PODERES (SALTAR)</button>
+        </div>
+
+        <div id="ch4" class="chapter">
+            <h1>CAPÍTULO 4: LUCES DE NAVIDAD</h1>
+            <div class="story-text">
+                Las luces de la casa parpadean. Joyce Byers tenía razón. Me estás hablando a través de la electricidad. Veo una secuencia de colores: Rojo (Sangre), Azul (Tristeza), Verde (Esperanza), Amarillo (Luz). Tengo que repetirla para contestarte.
+            </div>
+            <div class="lights-grid">
+                <div class="bulb" id="b1" style="color:red"></div>
+                <div class="bulb" id="b2" style="color:blue"></div>
+                <div class="bulb" id="b3" style="color:green"></div>
+                <div class="bulb" id="b4" style="color:yellow"></div>
+            </div>
+            <button class="btn" style="font-size:0.8rem" onclick="playSequence()">👁️ VER SECUENCIA DE NUEVO</button>
+            <div style="margin-top:10px">
+                <p>Repite el patrón:</p>
+                <button class="btn" style="width:22%; display:inline-block; padding:5px; border-color:red;" onclick="checkLight(0)">🔴</button>
+                <button class="btn" style="width:22%; display:inline-block; padding:5px; border-color:blue;" onclick="checkLight(1)">🔵</button>
+                <button class="btn" style="width:22%; display:inline-block; padding:5px; border-color:green;" onclick="checkLight(2)">🟢</button>
+                <button class="btn" style="width:22%; display:inline-block; padding:5px; border-color:yellow;" onclick="checkLight(3)">🟡</button>
+            </div>
+            <button class="skip-btn" onclick="next(5)">⚡ USAR PODERES (SALTAR)</button>
+        </div>
+
+        <div id="ch5" class="chapter">
+            <h1>CAPÍTULO 5: RECARGA</h1>
+            <div class="story-text">
+                El viaje entre dimensiones me está agotando. Me siento débil, me sangra la nariz como a Eleven. Encontré una caja de Eggo Waffles congelados. Sé que suena tonto, pero necesito glucosa para seguir luchando por ti.
+            </div>
+            <div style="font-size: 5rem; margin: 20px 0; cursor: pointer;" onclick="eatWaffle(this)">🧇</div>
+            <p id="waffleCount">Comidos: 0/5</p>
+            <button class="skip-btn" onclick="next(6)">⚡ USAR PODERES (SALTAR)</button>
+        </div>
+
+        <div id="ch6" class="chapter">
+            <h1>CAPÍTULO 6: DEMODOGS</h1>
+            <div class="story-text">
+                Escucho gruñidos. No estamos solos. Una manada de Demodogs bloquea el pasillo. No tengo armas, solo mi determinación de verte de nuevo. Tendré que golpearlos justo cuando salten. ¡Cúbreme!
+            </div>
+            <div style="height:150px; background:#200; border:2px dashed red; position:relative; overflow:hidden;" id="monsterZone" onclick="missClick()"></div>
+            <p id="killScore">Derrotados: 0/5</p>
+            <button class="skip-btn" onclick="next(7)">⚡ USAR PODERES (SALTAR)</button>
+        </div>
+
+        <div id="ch7" class="chapter">
+            <h1>CAPÍTULO 7: GRAVEDAD CERO</h1>
+            <div class="story-text">
+                He cruzado el portal. Aquí, en el Upside Down, la gravedad está mal. El cielo es el suelo. Me siento mareado, como en esa canción de Zoé donde todo flota en el espacio. Ayúdame a girar el mundo para no caer al vacío.
+            </div>
+            <h1 id="worldIcon" style="font-size:4rem; transform: rotate(180deg); display:inline-block;">🪐</h1>
+            <input type="range" min="0" max="180" value="0" oninput="rotateWorld(this.value)">
+            <button class="skip-btn" onclick="next(8)">⚡ USAR PODERES (SALTAR)</button>
+        </div>
+
+        <div id="ch8" class="chapter">
+            <h1>CAPÍTULO 8: LA HERIDA</h1>
+            <div class="story-text">
+                Me he lastimado el pie corriendo. Duele, pero el dolor me recuerda que sigo vivo. Recuerdo cuando te lastimaste tu piecito; prometí cuidarte. Ahora debo aplicar esa misma medicina mágica para seguir avanzando hacia ti.
+            </div>
+            <div style="width:100%; background:#333; height:20px; border-radius:10px; overflow:hidden; margin:20px 0;">
+                <div id="healBar" style="width:0%; height:100%; background:#00ff00; transition:0.2s;"></div>
+            </div>
+            <button class="btn" onclick="healSelf()">APLICAR VENDAJE 🩹</button>
+            <button class="skip-btn" onclick="next(9)">⚡ USAR PODERES (SALTAR)</button>
+        </div>
+
+        <div id="ch9" class="chapter">
+            <h1>CAPÍTULO 9: HUIDA</h1>
+            <div class="story-text">
+                ¡Vecna me ha visto! Sus tentáculos intentan atraparme. Tengo que correr más rápido que nunca. Imagino que estás en la meta esperándome, y eso hace que mis piernas se muevan solas. ¡Corre conmigo!
+            </div>
+            <button class="btn" onclick="runFast()">¡CORRER! 🏃‍♂️💨</button>
+            <div style="width:100%; height:5px; background:#444; margin-top:10px;">
+                <div id="runBar" style="width:0%; height:100%; background:red;"></div>
+            </div>
+            <button class="skip-btn" onclick="next(10)">⚡ USAR PODERES (SALTAR)</button>
+        </div>
+
+        <div id="ch10" class="chapter">
+            <h1>CAPÍTULO 10: EL VACÍO</h1>
+            <div class="story-text">
+                Me escondí en el Vacío Negro, ese lugar donde Eleven encuentra a las personas. Todo es oscuro y hay agua en el suelo. Cierro los ojos y escucho tu respiración. Toca la oscuridad para encontrar tu señal.
+            </div>
+            <div style="width:200px; height:200px; background:black; border:2px solid #555; margin:0 auto; cursor:crosshair;" onclick="findSignal()">
+                <div id="signalDot" style="display:none; color:white; font-size:2rem; margin-top:80px;">❤️</div>
+            </div>
+            <p id="voidMsg">Toca para buscar...</p>
+            <button class="skip-btn" onclick="next(11)">⚡ USAR PODERES (SALTAR)</button>
+        </div>
+
+        <div id="ch11" class="chapter">
+            <h1>CAPÍTULO 11: OBSTÁCULO</h1>
+            <div class="story-text">
+                Una camioneta vieja bloquea la salida. No tengo fuerza física, pero mi mente está conectada a la tuya. Si nos concentramos juntos, podemos levantarla como una pluma. Concéntrate.
+            </div>
+            <div id="van" style="font-size:4rem; transition: transform 1s;">🚐</div>
+            <button class="btn" onmousedown="lift(true)" onmouseup="lift(false)" ontouchstart="lift(true)" ontouchend="lift(false)">USAR MENTE 🧠</button>
+            <button class="skip-btn" onclick="next(12)">⚡ USAR PODERES (SALTAR)</button>
+        </div>
+
+        <div id="ch12" class="chapter">
+            <h1>CAPÍTULO 12: SOMBRAS</h1>
+            <div class="story-text">
+                La niebla es espesa. Creo ver figuras en la sombra. ¿Es un amigo o un enemigo? Necesito usar la linterna para comunicarme en código Morse. Un parpadeo significa "Estoy aquí".
+            </div>
+            <div id="darkBox" style="height:150px; background:black; display:flex; align-items:center; justify-content:center;">
+                <span id="hiddenMsg" style="display:none; font-size:2rem;">TE VEO</span>
+            </div>
+            <button class="btn" onclick="flash()">ENCENDER / APAGAR 🔦</button>
+            <button class="skip-btn" onclick="next(13)">⚡ USAR PODERES (SALTAR)</button>
+        </div>
+
+        <div id="ch13" class="chapter">
+            <h1>CAPÍTULO 13: MAX'S SONG</h1>
+            <div class="story-text">
+                La maldición de Vecna intenta atraparme. Necesito mi canción salvavidas, esa que me conecta contigo. El cassette se ha enredado. Ayúdame a girarlo con un lápiz para que suene la música.
+            </div>
+            <div id="tape" style="font-size:4rem; display:inline-block; transition: transform 0.2s;">📼</div>
+            <br>
+            <button class="btn" style="width:auto" onclick="spinTape()">GIRAR LÁPIZ ✏️</button>
+            <button class="skip-btn" onclick="next(14)">⚡ USAR PODERES (SALTAR)</button>
+        </div>
+
+        <div id="ch14" class="chapter">
+            <h1>CAPÍTULO 14: LA CAJA</h1>
+            <div class="story-text">
+                Encontré una caja fuerte con tus iniciales. Dentro está la llave para salir de aquí. La combinación son números que significan algo para nosotros... o quizás suerte. Probemos 3-5-2.
+            </div>
+            <h2 id="safeNum">000</h2>
+            <input type="range" min="0" max="999" value="0" oninput="checkSafe(this.value)">
+            <button class="skip-btn" onclick="next(15)">⚡ USAR PODERES (SALTAR)</button>
+        </div>
+
+        <div id="ch15" class="chapter">
+            <h1>CAPÍTULO 15: LA CARTA</h1>
+            <div class="story-text">
+                La caja se abrió. Había una carta doblada, escrita con tinta roja.
+            </div>
+            <div class="paper">
+                "Estefany:
+                <br><br>
+                He cruzado océanos de tiempo y dimensiones de monstruos solo para decirte esto. No importa si el mundo está del revés, si hay Demogorgons o si las luces parpadean. Tú eres mi constante. Mi Vía Láctea. Mi hogar. 
+                <br><br>
+                Prometo cuidarte siempre."
+            </div>
+            <button class="btn" onclick="next(16)">GUARDAR CARTA ❤️</button>
+        </div>
+
+        <div id="ch16" class="chapter">
+            <h1>CAPÍTULO 16: CABLES</h1>
+            <div class="story-text">
+                El sistema de seguridad del laboratorio está activo. Hay que cortar los cables para abrir la puerta final. Corta el cable que NO es del color del peligro. (Pista: El azul es calma).
+            </div>
+            <div style="display:flex; flex-direction:column; gap:10px;">
+                <button class="btn" style="border-color:red" onclick="alert('¡ALARMA!')">CABLE ROJO</button>
+                <button class="btn" style="border-color:blue" onclick="next(17)">CABLE AZUL</button>
+                <button class="btn" style="border-color:green" onclick="alert('¡ALARMA!')">CABLE VERDE</button>
+            </div>
+            <button class="skip-btn" onclick="next(17)">⚡ USAR PODERES (SALTAR)</button>
+        </div>
+
+        <div id="ch17" class="chapter">
+            <h1>CAPÍTULO 17: SOÑÉ</h1>
+            <div class="story-text">
+                "Y todo el tiempo estoy pensando en ti..." La letra de esa canción resuena aquí. El cielo se llena de estrellas artificiales. Toca el cielo para crear una constelación que nos guíe a casa.
+            </div>
+            <div id="skyBox" style="height:150px; border:1px solid white; cursor:pointer;" onclick="makeStar(event)"></div>
+            <p id="starCount">Estrellas: 0/5</p>
+            <button class="skip-btn" onclick="next(18)">⚡ USAR PODERES (SALTAR)</button>
+        </div>
+
+        <div id="ch18" class="chapter">
+            <h1>CAPÍTULO 18: LA GRIETA</h1>
+            <div class="story-text">
+                Ahí está. La grieta madre. Brilla con un rojo intenso y amenazante. Eleven la cerró una vez con un grito, nosotros la cerraremos con amor. Toca la grieta repetidamente hasta que desaparezca.
+            </div>
+            <div id="rift" style="font-size:6rem; color:red; text-shadow:0 0 20px red; cursor:pointer;" onclick="closeRift()">⚡</div>
+            <button class="skip-btn" onclick="next(19)">⚡ USAR PODERES (SALTAR)</button>
+        </div>
+
+        <div id="ch19" class="chapter">
+            <h1>CAPÍTULO 19: SILENCIO</h1>
+            <div class="story-text">
+                El ruido se detuvo. Las partículas de ceniza dejaron de caer. Estamos de vuelta en el mundo real, pero algo ha cambiado. Yo he cambiado. Este viaje me ha hecho darme cuenta de que no quiero enfrentar ningún monstruo sin ti.
+            </div>
+            <button class="btn" onclick="next(20)">DAR EL ÚLTIMO PASO 👣</button>
+        </div>
+
+        <div id="ch20" class="chapter">
+            <div class="visual-box" style="height:250px; border-color:white;">
+                <img src="https://wdteacgqjbtonaktzxny.supabase.co/storage/v1/object/public/propio/Captura%20de%20pantalla%202026-02-14%20171720.png">
+            </div>
+            <p style="margin-top:20px;">Estefany Jheselin...</p>
+            <h1 style="color: white; text-shadow: 0 0 10px var(--neon-red);">¿QUIERES QUEDARTE CONMIGO PARA SIEMPRE?</h1>
+            
+            <button id="btnYes" class="btn" onclick="finishGame()">¡SÍ, QUIERO! ❤️</button>
+            <button id="btnNo" class="btn" style="background:transparent; border:1px solid #555; color:#777; font-size:0.8rem; margin-top:20px;">No sé...</button>
+        </div>
+
+        <div id="ending" class="chapter">
+            <h1 style="font-size:3rem; margin-top:50px;">¡TE AMO!</h1>
+            <p>Juntos venceremos cualquier dimensión.</p>
+            <div style="font-size:5rem; animation:pulse 1s infinite;">💏</div>
+            <p style="margin-top:20px;">Gracias por ser mi Eleven.</p>
+            <img src="https://media.tenor.com/Pz9nQvW60t8AAAAC/stranger-things-eleven.gif" style="width:100%; border-radius:10px; margin-top:20px;">
+        </div>
+
+    </div>
+
+    <script>
+        // --- LÓGICA DEL JUEGO ---
+        
+        function startGame() {
+            let audio = document.getElementById('bgMusicEpic');
+            audio.volume = 0.5;
+            audio.play().catch(e => console.log("Audio play failed"));
+            next(1);
+        }
+
+        function next(id) {
+            document.querySelectorAll('.chapter').forEach(c => c.classList.remove('active'));
+            document.getElementById('ch' + id).classList.add('active');
+            window.scrollTo(0, 0);
+
+            // Iniciar mecánicas específicas
+            if(id === 6) startMonsters();
+        }
+
+        // C1
+        function checkRadio(val) {
+            document.getElementById('radioStat').innerText = val + ".0 MHz";
+            if(val > 88 && val < 92) {
+                document.getElementById('radioStat').style.color = "#0f0";
+                setTimeout(() => next(2), 1000);
+            }
+        }
+
+        // C2
+        let code = "";
+        function enterCode(n) {
+            code += n;
+            document.getElementById('codeDisplay').innerText = code;
+            if(code === "011") setTimeout(() => next(3), 500);
+            if(code.length > 2 && code !== "011") { code = ""; document.getElementById('codeDisplay').innerText = "ERR"; }
+        }
+
+        // C3
+        let revTimer;
+        function reveal(start) {
+            let img = document.getElementById('secretPhoto');
+            if(start) {
+                img.style.filter = "blur(0px)";
+                revTimer = setTimeout(() => next(4), 1500);
+            } else {
+                img.style.filter = "blur(20px)";
+                clearTimeout(revTimer);
+            }
+        }
+
+        // C4
+        let seq = [];
+        function playSequence() {
+            let colors = ['red', 'blue', 'green', 'yellow'];
+            let bulbs = document.querySelectorAll('.bulb');
+            let i = 0;
+            let int = setInterval(() => {
+                if(i >= 4) { clearInterval(int); return; }
+                bulbs[i].classList.add('active');
+                setTimeout(() => { document.querySelectorAll('.bulb').forEach(b => b.classList.remove('active')); }, 500);
+                i++;
+            }, 600);
+        }
+        function checkLight(idx) {
+            seq.push(idx);
+            if(seq.length === 4) next(5);
+        }
+
+        // C5
+        let eaten = 0;
+        function eatWaffle(el) {
+            eaten++;
+            document.getElementById('waffleCount').innerText = eaten + "/5";
+            el.style.transform = "scale(0.8)";
+            setTimeout(() => el.style.transform = "scale(1)", 100);
+            if(eaten >= 5) next(6);
+        }
+
+        // C6
+        let killed = 0;
+        function startMonsters() {
+            let area = document.getElementById('monsterZone');
+            let int = setInterval(() => {
+                if(killed >= 5) { clearInterval(int); return; }
+                let m = document.createElement('div');
+                m.innerText = "👾"; m.className = 'monster';
+                m.style.left = Math.random()*80 + "%"; m.style.top = Math.random()*60 + "%";
+                m.onclick = (e) => { e.stopPropagation(); killed++; document.getElementById('killScore').innerText = killed+"/5"; m.remove(); if(killed>=5) next(7); };
+                area.appendChild(m);
+                setTimeout(() => m.remove(), 800);
+            }, 900);
+        }
+        function missClick() { document.body.style.background = "#300"; setTimeout(() => document.body.style.background = "var(--deep-dark)", 100); }
+
+        // C7
+        function rotateWorld(v) {
+            document.getElementById('worldIcon').style.transform = `rotate(${180-v}deg)`;
+            if(v > 170) setTimeout(() => next(8), 500);
+        }
+
+        // C8
+        let healP = 0;
+        function healSelf() {
+            healP += 20;
+            document.getElementById('healBar').style.width = healP + "%";
+            if(healP >= 100) next(9);
+        }
+
+        // C9
+        let runP = 0;
+        function runFast() {
+            runP += 10;
+            document.getElementById('runBar').style.width = runP + "%";
+            if(runP >= 100) next(10);
+        }
+
+        // C10
+        function findSignal() {
+            document.getElementById('signalDot').style.display = "block";
+            document.getElementById('voidMsg').innerText = "¡TE ENCONTRÉ!";
+            document.getElementById('voidMsg').style.color = "#0f0";
+            setTimeout(() => next(11), 1000);
+        }
+
+        // C11
+        let liftT;
+        function lift(start) {
+            let v = document.getElementById('van');
+            if(start) { v.style.transform = "translateY(-50px) rotate(5deg)"; liftT = setTimeout(() => next(12), 1500); }
+            else { v.style.transform = "translateY(0)"; clearTimeout(liftT); }
+        }
+
+        // C12
+        function flash() {
+            let msg = document.getElementById('hiddenMsg');
+            let box = document.getElementById('darkBox');
+            box.style.background = "white"; msg.style.display = "block";
+            setTimeout(() => { box.style.background = "black"; msg.style.display = "none"; next(13); }, 500);
+        }
+
+        // C13
+        let spins = 0;
+        function spinTape() {
+            spins += 45;
+            document.getElementById('tape').style.transform = `rotate(${spins}deg)`;
+            if(spins > 360) next(14);
+        }
+
+        // C14
+        function checkSafe(v) {
+            document.getElementById('safeNum').innerText = v.padStart(3, '0');
+            if(v == 352) setTimeout(() => next(15), 500);
+        }
+
+        // C17
+        let stars = 0;
+        function makeStar(e) {
+            stars++;
+            let s = document.createElement('div');
+            s.innerText = "⭐"; s.style.position = "absolute"; s.style.left = e.offsetX+"px"; s.style.top = e.offsetY+"px";
+            e.target.appendChild(s);
+            document.getElementById('starCount').innerText = stars + "/5";
+            if(stars >= 5) setTimeout(() => next(18), 500);
+        }
+
+        // C18
+        let rHits = 0;
+        function closeRift() {
+            rHits++;
+            document.getElementById('rift').style.transform = `scale(${1 - rHits*0.1})`;
+            if(rHits >= 10) next(19);
+        }
+
+        // --- FINAL ---
+        const btnNo = document.getElementById('btnNo');
+        let attempts = 0;
+        btnNo.addEventListener('click', () => {
+            attempts++;
+            // Mover botón NO
+            btnNo.style.position = 'absolute';
+            btnNo.style.left = Math.random() * 200 + 'px';
+            btnNo.style.top = Math.random() * 50 + 200 + 'px'; // Mover abajo
+            btnNo.innerText = "NO PUEDO DECIR NO";
+            
+            // Crecer botón SÍ
+            let btnYes = document.getElementById('btnYes');
+            btnYes.style.transform = `scale(${1 + attempts*0.2})`;
+            
+            if(attempts > 3) btnNo.style.display = 'none';
+        });
+
+        function finishGame() {
+            // Cambiar música y estilo
+            let m1 = document.getElementById('bgMusicEpic');
+            let m2 = document.getElementById('bgMusicLove');
+            m1.pause();
+            m2.volume = 0.6; m2.play();
+
+            document.body.classList.add('love-mode');
+            next('ending');
+
+            // Lluvia de amor
+            setInterval(() => {
+                let d = document.createElement('div');
+                d.innerText = "💖"; d.style.position="fixed"; d.style.left=Math.random()*100+"vw"; d.style.top="-10px";
+                d.style.animation = "fadeIn 3s forwards";
+                document.body.appendChild(d);
+            }, 300);
+        }
+
+    </script>
+</body>
+</html>
